@@ -1,2 +1,3 @@
 handoff/
 *.zip
+node_modules/

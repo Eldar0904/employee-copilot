@@ -1,6 +1,6 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; background: #c8d2d6; font-family: 'Montserrat', sans-serif; }
-body { display: flex; align-items: center; justify-content: center; padding: 40px 20px; min-height: 100vh; }
+body { display: flex; align-items: center; justify-content: center; padding: 40px 20px; min-height: 100vh; min-height: 100dvh; }
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(10px); }
@@ -563,3 +563,33 @@ body { display: flex; align-items: center; justify-content: center; padding: 40p
 /* ── 6-tab bar ── */
 .tab-bar-6 .tab-item { gap: 2px; }
 .tab-bar-6 .tab-label { font-size: 9px !important; }
+
+/* ── Real phone: full screen, no mockup bezel ── */
+@media (max-width: 480px) {
+  body {
+    padding: 0;
+    background: #f6f7f9;
+    align-items: stretch;
+  }
+  .device {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .dynamic-island,
+  .home-indicator,
+  .status-bar {
+    display: none;
+  }
+  .status-spacer {
+    height: max(12px, env(safe-area-inset-top));
+  }
+  .tab-bar {
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  .sheet {
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+}
