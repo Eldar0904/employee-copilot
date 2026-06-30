@@ -226,7 +226,26 @@ function renderMe() {
   ]));
 
   const list = h('div', { className: 'settings-list' });
-  PROFILE_SETTINGS.forEach(s => {
+  getProfileSettings().forEach(s => {
+    if (s.isLanguage) {
+      const lang = getLang();
+      const row = h('div', { className: 'settings-row settings-row-lang', style: s.border ? 'border-bottom:1px solid #f2f4f5' : '' }, [
+        h('div', { className: 'settings-icon', style: `background:${s.iconBg}` }, s.icon),
+        h('div', { className: 'settings-label' }, s.label),
+        h('div', { className: 'lang-picker' }, [
+          h('button', {
+            className: `lang-pill${lang === 'ru' ? ' active' : ''}`,
+            onclick: e => { e.stopPropagation(); if (lang !== 'ru') setLanguage('ru'); },
+          }, I18N.langRu),
+          h('button', {
+            className: `lang-pill${lang === 'en' ? ' active' : ''}`,
+            onclick: e => { e.stopPropagation(); if (lang !== 'en') setLanguage('en'); },
+          }, I18N.langEn),
+        ]),
+      ]);
+      list.appendChild(row);
+      return;
+    }
     list.appendChild(h('div', {
       className: 'settings-row',
       style: s.border ? 'border-bottom:1px solid #f2f4f5' : '',
@@ -286,6 +305,7 @@ function renderTabBar() {
 
 function boot() {
   try {
+    initLang();
     state.week = wwGetCurrentWeek();
     state.weekHistory = wwGetWeekHistory();
     state.activeDay = wwGetTodayDayKey();

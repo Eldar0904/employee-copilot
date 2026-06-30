@@ -9,6 +9,9 @@ function wwGetCurrentWeek() {
       return seeded;
     }
     const week = JSON.parse(raw);
+    if (!week._demo && week.tasks?.length === 7 && week.calendarEvents?.length === 7) {
+      week._demo = true;
+    }
     if (week.id !== wwGetWeekId()) {
       wwArchiveWeek(week);
       const fresh = wwCreateEmptyWeek();

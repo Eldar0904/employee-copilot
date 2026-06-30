@@ -398,7 +398,7 @@ function renderDayProgress(allEvents, activeDay) {
   const pct = dayAll.length === 0 ? 0 : Math.round(dayDeep / dayAll.length * 100);
   return h('div', { className: 'week-progress-card', style: 'margin-top:12px' }, [
     h('div', { className: 'week-progress-row' }, [
-      h('div', { className: 'week-progress-label' }, `${wwDayLabel(activeDay)} — ${ruEvents(dayAll.length)}`),
+      h('div', { className: 'week-progress-label' }, `${wwDayLabel(activeDay)} — ${formatEvents(dayAll.length)}`),
       h('div', { className: 'week-progress-count' }, `${dayDeep} ${I18N.deepWork}`),
     ]),
     h('div', { className: 'progress-track' }, [

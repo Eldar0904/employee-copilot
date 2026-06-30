@@ -332,6 +332,16 @@ body { display: flex; align-items: center; justify-content: center; padding: 40p
   display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px;
 }
 .settings-label { font-size: 15px; font-weight: 500; color: #223035; flex: 1; }
+.settings-row-lang { align-items: center; }
+.lang-picker {
+  display: flex; gap: 4px; background: #f2f4f5; border-radius: 8px; padding: 3px;
+}
+.lang-pill {
+  border: none; background: transparent; border-radius: 6px;
+  padding: 5px 10px; font-size: 12px; font-weight: 600; color: #6b7280;
+  font-family: inherit; cursor: pointer; white-space: nowrap;
+}
+.lang-pill.active { background: #fff; color: #0b5389; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 
 /* ── Bottom tab bar ── */
 .tab-bar {

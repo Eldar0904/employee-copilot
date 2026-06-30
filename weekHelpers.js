@@ -91,30 +91,60 @@ function wwEventType(key) {
 }
 
 function wwSeedDemoWeek() {
+  const lang = typeof getLang === 'function' ? getLang() : 'ru';
   const week = wwCreateEmptyWeek();
-  week.lesson = 'Утро лучше отдавать глубокой работе, пока не накопились встречи.';
-  week.priorities = [
-    { id: '1', text: 'Проверить отчёт по бюджету Q3', selected: true },
-    { id: '2', text: 'Обновить таймлайн проекта', selected: false },
-    { id: '3', text: 'Подготовиться к звонку с клиентом', selected: false },
-  ];
-  week.calendarEvents = [
-    { id: 'e1', title: 'Стендап команды', day: 'Mon', type: 'meeting', flagged: false },
-    { id: 'e2', title: 'Глубокая работа: бюджет', day: 'Mon', type: 'deep', flagged: false },
-    { id: 'e3', title: 'Планирование спринта', day: 'Tue', type: 'meeting', flagged: false },
-    { id: 'e4', title: 'Ревью дизайна', day: 'Tue', type: 'leverage', flagged: false },
-    { id: 'e5', title: 'Звонок с клиентом Acme', day: 'Wed', type: 'leverage', flagged: false },
-    { id: 'e6', title: 'Блок на почту', day: 'Thu', type: 'admin', flagged: false },
-    { id: 'e7', title: 'Подготовка к общему собранию', day: 'Fri', type: 'meeting', flagged: false },
-  ];
-  week.tasks = [
-    { id: 't1', text: 'Проверить отчёт по бюджету Q3', triage: 'do', done: false },
-    { id: 't2', text: 'Стендап — разработка', triage: 'do', done: false },
-    { id: 't3', text: 'Ответить на памятку HR по онбордингу', triage: 'defer', done: false },
-    { id: 't4', text: 'Обновить слайды таймлайна проекта', triage: 'do', done: false },
-    { id: 't5', text: 'Звонок с клиентом Acme Corp', triage: 'do', done: false },
-    { id: 't6', text: 'Согласование договора с поставщиком', triage: 'delegate', done: false },
-    { id: 't7', text: 'Обучение по ИБ', triage: 'delete', done: false },
-  ];
+  week._demo = true;
+
+  if (lang === 'en') {
+    week.lesson = 'Mornings are best for deep work before meetings pile up.';
+    week.priorities = [
+      { id: '1', text: 'Review Q3 budget report', selected: true },
+      { id: '2', text: 'Update project timeline', selected: false },
+      { id: '3', text: 'Prep for client call', selected: false },
+    ];
+    week.calendarEvents = [
+      { id: 'e1', title: 'Team standup', day: 'Mon', type: 'meeting', flagged: false },
+      { id: 'e2', title: 'Deep work: budget', day: 'Mon', type: 'deep', flagged: false },
+      { id: 'e3', title: 'Sprint planning', day: 'Tue', type: 'meeting', flagged: false },
+      { id: 'e4', title: 'Design review', day: 'Tue', type: 'leverage', flagged: false },
+      { id: 'e5', title: 'Acme client call', day: 'Wed', type: 'leverage', flagged: false },
+      { id: 'e6', title: 'Email block', day: 'Thu', type: 'admin', flagged: false },
+      { id: 'e7', title: 'All-hands prep', day: 'Fri', type: 'meeting', flagged: false },
+    ];
+    week.tasks = [
+      { id: 't1', text: 'Review Q3 budget report', triage: 'do', done: false },
+      { id: 't2', text: 'Engineering standup', triage: 'do', done: false },
+      { id: 't3', text: 'Reply to HR onboarding memo', triage: 'defer', done: false },
+      { id: 't4', text: 'Update project timeline slides', triage: 'do', done: false },
+      { id: 't5', text: 'Acme Corp client call', triage: 'do', done: false },
+      { id: 't6', text: 'Vendor contract approval', triage: 'delegate', done: false },
+      { id: 't7', text: 'Security training', triage: 'delete', done: false },
+    ];
+  } else {
+    week.lesson = 'Утро лучше отдавать глубокой работе, пока не накопились встречи.';
+    week.priorities = [
+      { id: '1', text: 'Проверить отчёт по бюджету Q3', selected: true },
+      { id: '2', text: 'Обновить таймлайн проекта', selected: false },
+      { id: '3', text: 'Подготовиться к звонку с клиентом', selected: false },
+    ];
+    week.calendarEvents = [
+      { id: 'e1', title: 'Стендап команды', day: 'Mon', type: 'meeting', flagged: false },
+      { id: 'e2', title: 'Глубокая работа: бюджет', day: 'Mon', type: 'deep', flagged: false },
+      { id: 'e3', title: 'Планирование спринта', day: 'Tue', type: 'meeting', flagged: false },
+      { id: 'e4', title: 'Ревью дизайна', day: 'Tue', type: 'leverage', flagged: false },
+      { id: 'e5', title: 'Звонок с клиентом Acme', day: 'Wed', type: 'leverage', flagged: false },
+      { id: 'e6', title: 'Блок на почту', day: 'Thu', type: 'admin', flagged: false },
+      { id: 'e7', title: 'Подготовка к общему собранию', day: 'Fri', type: 'meeting', flagged: false },
+    ];
+    week.tasks = [
+      { id: 't1', text: 'Проверить отчёт по бюджету Q3', triage: 'do', done: false },
+      { id: 't2', text: 'Стендап — разработка', triage: 'do', done: false },
+      { id: 't3', text: 'Ответить на памятку HR по онбордингу', triage: 'defer', done: false },
+      { id: 't4', text: 'Обновить слайды таймлайна проекта', triage: 'do', done: false },
+      { id: 't5', text: 'Звонок с клиентом Acme Corp', triage: 'do', done: false },
+      { id: 't6', text: 'Согласование договора с поставщиком', triage: 'delegate', done: false },
+      { id: 't7', text: 'Обучение по ИБ', triage: 'delete', done: false },
+    ];
+  }
   return week;
 }
