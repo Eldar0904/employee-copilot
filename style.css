@@ -27,12 +27,15 @@ body { display: flex; align-items: center; justify-content: center; padding: 40p
 }
 .status-bar {
   position: absolute; top: 0; left: 0; right: 0; z-index: 10;
-  display: flex; align-items: center; padding: 21px 24px 19px;
-  transition: background 0.25s;
+  display: flex; align-items: center; justify-content: center; gap: 154px;
+  padding: 21px 24px 19px; box-sizing: border-box;
+}
+.status-time-wrap {
+  flex: 1; display: flex; align-items: center; justify-content: center;
 }
 .status-time {
-  flex: 1; font-family: -apple-system, 'SF Pro', system-ui;
-  font-size: 17px; font-weight: 600; color: #000; letter-spacing: 0.2px; text-align: center;
+  font-family: -apple-system, 'SF Pro', system-ui;
+  font-size: 17px; font-weight: 600; color: #000; letter-spacing: 0.2px;
 }
 .status-icons {
   flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
@@ -371,6 +374,10 @@ body { display: flex; align-items: center; justify-content: center; padding: 40p
   font-size: 12px; font-weight: 700; color: #fff;
   padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.3px;
 }
+.sheet-tag-priority {
+  font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+  text-transform: capitalize;
+}
 .sheet-tag-neutral {
   font-size: 12px; font-weight: 500; color: #4f5158;
   background: #f6f7f9; padding: 4px 12px; border-radius: 20px;
@@ -390,5 +397,5 @@ body { display: flex; align-items: center; justify-content: center; padding: 40p
   width: 100%; background: #f6f7f9; border: none; outline: none;
   border-radius: 12px; padding: 13px 16px; font-size: 15px;
   font-family: 'Montserrat', sans-serif; color: #223035;
-  display: block; margin-bottom: 12px;
+  display: block; box-sizing: border-box; margin-bottom: 12px;
 }

@@ -66,15 +66,8 @@ function render() {
   content.innerHTML = '';
 
   const isMeTab = state.activeTab === 'me' && !state.activeChat;
-  const barBg = isMeTab ? '#0b5389' : '#fff';
-  document.getElementById('statusBar').style.background    = barBg;
-  document.getElementById('statusSpacer').style.background = barBg;
-
-  // Flip status-bar icon colour for the Me tab
-  document.getElementById('statusBar').querySelectorAll('[fill="#000"]')
-    .forEach(el => el.setAttribute('fill', isMeTab ? '#fff' : '#000'));
-  document.getElementById('statusBar').querySelectorAll('[stroke="#000"]')
-    .forEach(el => el.setAttribute('stroke', isMeTab ? '#fff' : '#000'));
+  document.getElementById('statusSpacer').style.background =
+    isMeTab ? '#0b5389' : '#ffffff';
 
   if (state.activeChat) {
     content.appendChild(renderChat());
@@ -490,7 +483,7 @@ function renderTaskDetailSheet() {
     h('div', { className: 'sheet-tags' }, [
       h('div', { className: 'sheet-tag', style: `background:${deptColor}` }, t.dept),
       h('div', { className: 'sheet-tag-neutral' }, `Due ${t.dueTime}`),
-      h('div', { className: 'sheet-tag', style: `background:${priorityLightColor};color:${priorityColor}` }, `${t.priority} priority`),
+      h('div', { className: 'sheet-tag-priority', style: `background:${priorityLightColor};color:${priorityColor}` }, `${t.priority} priority`),
     ]),
     h('div', { className: 'sheet-actions' }, [btnEl, closeBtn]),
   ]);
