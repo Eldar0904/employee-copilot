@@ -39,6 +39,7 @@ function h(tag, attrs, children) {
   }
   (Array.isArray(children) ? children : children != null ? [children] : []).forEach(c => {
     if (c == null) return;
+    if (Array.isArray(c)) { c.forEach(nested => { if (nested != null) el.appendChild(nested.nodeType ? nested : document.createTextNode(String(nested))); }); return; }
     el.appendChild(typeof c === 'string' || typeof c === 'number'
       ? document.createTextNode(String(c))
       : c);

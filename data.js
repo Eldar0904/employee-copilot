@@ -5,108 +5,94 @@ const DEPT_COLORS = {
   PMO: '#2E8B57', Sales: '#ff9500', Design: '#af52de', IT: '#636366',
 };
 
+const DEPT_LABELS = {
+  Finance: 'Финансы', Engineering: 'Разработка', HR: 'HR',
+  PMO: 'PMO', Sales: 'Продажи', Design: 'Дизайн', IT: 'ИТ',
+};
+
 const PRIORITY_COLORS = { high: '#ef4635', medium: '#ff9500', low: '#34c759' };
 const PRIORITY_LIGHTS  = { high: '#fdecea', medium: '#fff3e0', low: '#e8f8ee' };
 
-// ── Tasks ────────────────────────────────────────────────────────────────────
-
 const TASKS = [
-  { id:1,  title:'Review Q3 budget report',        dept:'Finance',     dueTime:'10:00 AM', priority:'high',   day:0 },
-  { id:2,  title:'Team standup - Engineering',     dept:'Engineering', dueTime:'11:30 AM', priority:'medium', day:0 },
-  { id:3,  title:'Reply to HR onboarding memo',    dept:'HR',          dueTime:'2:00 PM',  priority:'medium', day:0 },
-  { id:4,  title:'Update project timeline slides', dept:'PMO',         dueTime:'4:00 PM',  priority:'low',    day:0 },
-  { id:5,  title:'Client call - Acme Corp',        dept:'Sales',       dueTime:'5:00 PM',  priority:'high',   day:0 },
-  { id:6,  title:'Sprint planning session',        dept:'Engineering', dueTime:'9:00 AM',  priority:'high',   day:1 },
-  { id:7,  title:'Design review with UX team',     dept:'Design',      dueTime:'2:00 PM',  priority:'medium', day:1 },
-  { id:8,  title:'Vendor contract approval',       dept:'Finance',     dueTime:'11:00 AM', priority:'high',   day:2 },
-  { id:9,  title:'Monthly all-hands prep',         dept:'PMO',         dueTime:'3:00 PM',  priority:'medium', day:2 },
-  { id:10, title:'Performance review kick-off',    dept:'HR',          dueTime:'10:00 AM', priority:'high',   day:3 },
-  { id:11, title:'Product roadmap presentation',   dept:'PMO',         dueTime:'1:00 PM',  priority:'high',   day:4 },
-  { id:12, title:'IT security training',           dept:'IT',          dueTime:'9:00 AM',  priority:'low',    day:5 },
+  { id:1,  title:'Проверить отчёт по бюджету Q3',     dept:'Finance',     dueTime:'10:00', priority:'high',   day:0 },
+  { id:2,  title:'Стендап — разработка',              dept:'Engineering', dueTime:'11:30', priority:'medium', day:0 },
+  { id:3,  title:'Ответить на памятку HR',            dept:'HR',          dueTime:'14:00', priority:'medium', day:0 },
+  { id:4,  title:'Обновить слайды таймлайна',         dept:'PMO',         dueTime:'16:00', priority:'low',    day:0 },
+  { id:5,  title:'Звонок с клиентом Acme',            dept:'Sales',       dueTime:'17:00', priority:'high',   day:0 },
 ];
-
-// ── Channels ─────────────────────────────────────────────────────────────────
 
 const CHANNELS = [
-  { id:'ch1', name:'#general',     emoji:'📢', bgColor:'#e2f6fd', lastMsg:'All-hands this Friday at 3pm - mark your calendars!', time:'9:14', unread:3 },
-  { id:'ch2', name:'#engineering', emoji:'⚙',  bgColor:'#ede9ff', lastMsg:'PR review needed on the auth module today',            time:'9:45', unread:5 },
-  { id:'ch3', name:'#finance',     emoji:'📊', bgColor:'#e6f0ff', lastMsg:'Q3 budget reports due by EOD today',                   time:'8:30', unread:1 },
-  { id:'ch4', name:'#hr',          emoji:'👥', bgColor:'#fef0ec', lastMsg:'New onboarding materials are ready for review',        time:'Tue',  unread:0 },
-  { id:'ch5', name:'#pmo',         emoji:'📋', bgColor:'#e8f8ee', lastMsg:'Project status update posted to the shared drive',     time:'Tue',  unread:0 },
+  { id:'ch1', name:'#общий',        emoji:'📢', bgColor:'#e2f6fd', lastMsg:'Общее собрание в пятницу в 15:00 — отметьте в календаре!', time:'9:14', unread:3 },
+  { id:'ch2', name:'#разработка',   emoji:'⚙',  bgColor:'#ede9ff', lastMsg:'Нужен ревью PR по модулю авторизации сегодня',            time:'9:45', unread:5 },
+  { id:'ch3', name:'#финансы',      emoji:'📊', bgColor:'#e6f0ff', lastMsg:'Отчёты по бюджету Q3 — до конца дня',                   time:'8:30', unread:1 },
+  { id:'ch4', name:'#hr',           emoji:'👥', bgColor:'#fef0ec', lastMsg:'Материалы по онбордингу готовы к проверке',              time:'Вт',  unread:0 },
+  { id:'ch5', name:'#pmo',          emoji:'📋', bgColor:'#e8f8ee', lastMsg:'Статус проекта опубликован на общем диске',              time:'Вт',  unread:0 },
 ];
-
-// ── Direct Messages ───────────────────────────────────────────────────────────
 
 const DMS = [
-  { id:'dm1', name:'Khalid Al-Rashid', initials:'KA', avatarBg:'#0b5389', lastMsg:'Did you review the Q3 deck?',         time:'10:02', unread:2, online:true,  role:'Engineering Manager' },
-  { id:'dm2', name:'Layla Hassan',     initials:'LH', avatarBg:'#af52de', lastMsg:'Can you join the design call at 2pm?', time:'9:55',  unread:1, online:true,  role:'UX Designer' },
-  { id:'dm3', name:'Omar Yousef',      initials:'OY', avatarBg:'#c97559', lastMsg:'Thanks for the quick reply!',          time:'9:20',  unread:0, online:false, role:'Finance Lead' },
-  { id:'dm4', name:'Rania Saleh',      initials:'RS', avatarBg:'#5856d6', lastMsg:'The vendor proposal looks good.',      time:'Tue',   unread:0, online:false, role:'HR Business Partner' },
+  { id:'dm1', name:'Алексей Волков',   initials:'АВ', avatarBg:'#0b5389', lastMsg:'Посмотрела презентацию Q3?',              time:'10:02', unread:2, online:true,  role:'Руководитель разработки' },
+  { id:'dm2', name:'Мария Козлова',    initials:'МК', avatarBg:'#af52de', lastMsg:'Можешь на дизайн-колл в 14:00?',          time:'9:55',  unread:1, online:true,  role:'UX-дизайнер' },
+  { id:'dm3', name:'Дмитрий Соколов',  initials:'ДС', avatarBg:'#c97559', lastMsg:'Спасибо за быстрый ответ!',               time:'9:20',  unread:0, online:false, role:'Руководитель финансов' },
+  { id:'dm4', name:'Елена Новикова',   initials:'ЕН', avatarBg:'#5856d6', lastMsg:'Предложение от поставщика выглядит хорошо.', time:'Вт',  unread:0, online:false, role:'HR-бизнес-партнёр' },
 ];
-
-// ── Chat message history ──────────────────────────────────────────────────────
 
 const CHAT_MESSAGES = {
   ch1: [
-    { sender:'Tariq Musa', initials:'TM', avatarBg:'#34c759', text:'Good morning! All-hands Friday 3pm.',   mine:false, time:'9:14 AM',  isChannel:true },
-    { sender:'Sara Ahmed', initials:'SA', avatarBg:'#c97559', text:"Added! Will there be a recording?",     mine:true,  time:'9:18 AM',  isChannel:true },
-    { sender:'Tariq Musa', initials:'TM', avatarBg:'#34c759', text:'Yes, posted to the drive after.',       mine:false, time:'9:22 AM',  isChannel:true },
+    { sender:'Тимур Муса',  initials:'ТМ', avatarBg:'#34c759', text:'Доброе утро! Общее собрание в пятницу в 15:00.', mine:false, time:'9:14',  isChannel:true },
+    { sender:'Сара Ахмед',  initials:'СА', avatarBg:'#c97559', text:'Добавила! Будет запись?',                       mine:true,  time:'9:18',  isChannel:true },
+    { sender:'Тимур Муса',  initials:'ТМ', avatarBg:'#34c759', text:'Да, выложим на диск после.',                    mine:false, time:'9:22',  isChannel:true },
   ],
   ch2: [
-    { sender:'Jad Malik',   initials:'JM', avatarBg:'#5856d6', text:'PR review needed - auth module.',      mine:false, time:'9:14 AM',  isChannel:true },
-    { sender:'Sara Ahmed',  initials:'SA', avatarBg:'#c97559', text:'On it after standup!',                 mine:true,  time:'9:32 AM',  isChannel:true },
-    { sender:'Nour Kassab', initials:'NK', avatarBg:'#ff9500', text:'Left comments already, Jad.',          mine:false, time:'9:45 AM',  isChannel:true },
-    { sender:'Jad Malik',   initials:'JM', avatarBg:'#5856d6', text:'Thanks both! Addressing by noon.',     mine:false, time:'10:01 AM', isChannel:true },
-    { sender:'Sara Ahmed',  initials:'SA', avatarBg:'#c97559', text:'Changes look great - approved!',       mine:true,  time:'11:48 AM', isChannel:true },
+    { sender:'Жад Малик',   initials:'ЖМ', avatarBg:'#5856d6', text:'Нужен ревью PR — модуль авторизации.',           mine:false, time:'9:14',  isChannel:true },
+    { sender:'Сара Ахмед',  initials:'СА', avatarBg:'#c97559', text:'Возьму после стендапа!',                         mine:true,  time:'9:32',  isChannel:true },
+    { sender:'Нур Кассаб',  initials:'НК', avatarBg:'#ff9500', text:'Уже оставила комментарии, Жад.',                 mine:false, time:'9:45',  isChannel:true },
+    { sender:'Жад Малик',   initials:'ЖМ', avatarBg:'#5856d6', text:'Спасибо обоим! Исправлю до полудня.',            mine:false, time:'10:01', isChannel:true },
+    { sender:'Сара Ахмед',  initials:'СА', avatarBg:'#c97559', text:'Изменения отличные — одобрено!',                 mine:true,  time:'11:48', isChannel:true },
   ],
   ch3: [
-    { sender:'Omar Yousef', initials:'OY', avatarBg:'#c97559', text:'Q3 budget reports due EOD today.',     mine:false, time:'8:30 AM', isChannel:true },
-    { sender:'Sara Ahmed',  initials:'SA', avatarBg:'#c97559', text:'PMO report submitted.',                mine:true,  time:'8:45 AM', isChannel:true },
+    { sender:'Дмитрий Соколов', initials:'ДС', avatarBg:'#c97559', text:'Отчёты по бюджету Q3 — до конца дня.',         mine:false, time:'8:30', isChannel:true },
+    { sender:'Сара Ахмед',      initials:'СА', avatarBg:'#c97559', text:'Отчёт PMO отправлен.',                          mine:true,  time:'8:45', isChannel:true },
   ],
   ch4: [
-    { sender:'Rania Saleh', initials:'RS', avatarBg:'#5856d6', text:'New onboarding materials ready. Feedback due Thursday.', mine:false, time:'Tue', isChannel:true },
+    { sender:'Елена Новикова', initials:'ЕН', avatarBg:'#5856d6', text:'Материалы по онбордингу готовы. Обратная связь до четверга.', mine:false, time:'Вт', isChannel:true },
   ],
   ch5: [
-    { sender:'Sara Ahmed',       initials:'SA', avatarBg:'#c97559', text:'Status update posted. All milestones on track.', mine:true,  time:'Tue', isChannel:true },
-    { sender:'Khalid Al-Rashid', initials:'KA', avatarBg:'#0b5389', text:'Great work! Sprint ahead of schedule.',          mine:false, time:'Tue', isChannel:true },
+    { sender:'Сара Ахмед',     initials:'СА', avatarBg:'#c97559', text:'Статус обновлён. Все вехи в графике.',          mine:true,  time:'Вт', isChannel:true },
+    { sender:'Алексей Волков', initials:'АВ', avatarBg:'#0b5389', text:'Отличная работа! Спринт опережает график.',     mine:false, time:'Вт', isChannel:true },
   ],
   dm1: [
-    { sender:'Khalid Al-Rashid', initials:'KA', avatarBg:'#0b5389', text:'Morning! Quick sprint timeline update?', mine:false, time:'8:45 AM',  isChannel:false },
-    { sender:'Sara Ahmed',       initials:'SA', avatarBg:'#c97559', text:'On track. Deck ready by EOD.',           mine:true,  time:'9:01 AM',  isChannel:false },
-    { sender:'Khalid Al-Rashid', initials:'KA', avatarBg:'#0b5389', text:'Did you review the Q3 deck?',           mine:false, time:'10:02 AM', isChannel:false },
+    { sender:'Алексей Волков', initials:'АВ', avatarBg:'#0b5389', text:'Утро! Быстрый апдейт по таймлайну спринта?',   mine:false, time:'8:45',  isChannel:false },
+    { sender:'Сара Ахмед',     initials:'СА', avatarBg:'#c97559', text:'В графике. Презентация готова к вечеру.',       mine:true,  time:'9:01',  isChannel:false },
+    { sender:'Алексей Волков', initials:'АВ', avatarBg:'#0b5389', text:'Посмотрела презентацию Q3?',                    mine:false, time:'10:02', isChannel:false },
   ],
   dm2: [
-    { sender:'Layla Hassan', initials:'LH', avatarBg:'#af52de', text:'Sharing new onboarding flow for review.',   mine:false, time:'9:30 AM', isChannel:false },
-    { sender:'Sara Ahmed',   initials:'SA', avatarBg:'#c97559', text:'Love the new navigation! Much cleaner.',    mine:true,  time:'9:38 AM', isChannel:false },
-    { sender:'Layla Hassan', initials:'LH', avatarBg:'#af52de', text:'Can you join the design call at 2pm?',      mine:false, time:'9:55 AM', isChannel:false },
+    { sender:'Мария Козлова', initials:'МК', avatarBg:'#af52de', text:'Делюсь новым флоу онбординга на ревью.',        mine:false, time:'9:30', isChannel:false },
+    { sender:'Сара Ахмед',    initials:'СА', avatarBg:'#c97559', text:'Нравится новая навигация! Намного чище.',       mine:true,  time:'9:38', isChannel:false },
+    { sender:'Мария Козлова', initials:'МК', avatarBg:'#af52de', text:'Можешь на дизайн-колл в 14:00?',                mine:false, time:'9:55', isChannel:false },
   ],
   dm3: [
-    { sender:'Sara Ahmed',  initials:'SA', avatarBg:'#c97559', text:'Budget submitted. Let me know if needed.',   mine:true,  time:'9:15 AM', isChannel:false },
-    { sender:'Omar Yousef', initials:'OY', avatarBg:'#c97559', text:'Thanks for the quick reply!',                mine:false, time:'9:20 AM', isChannel:false },
+    { sender:'Сара Ахмед',      initials:'СА', avatarBg:'#c97559', text:'Бюджет отправлен. Напиши, если нужно что-то ещё.', mine:true,  time:'9:15', isChannel:false },
+    { sender:'Дмитрий Соколов', initials:'ДС', avatarBg:'#c97559', text:'Спасибо за быстрый ответ!',                        mine:false, time:'9:20', isChannel:false },
   ],
   dm4: [
-    { sender:'Sara Ahmed',  initials:'SA', avatarBg:'#c97559', text:'Reviewed the vendor proposal - looks solid.', mine:true,  time:'Tue', isChannel:false },
-    { sender:'Rania Saleh', initials:'RS', avatarBg:'#5856d6', text:'The vendor proposal looks good.',              mine:false, time:'Tue', isChannel:false },
+    { sender:'Сара Ахмед',     initials:'СА', avatarBg:'#c97559', text:'Посмотрела предложение поставщика — всё ок.',     mine:true,  time:'Вт', isChannel:false },
+    { sender:'Елена Новикова', initials:'ЕН', avatarBg:'#5856d6', text:'Предложение от поставщика выглядит хорошо.',      mine:false, time:'Вт', isChannel:false },
   ],
 };
 
-// ── Week days ─────────────────────────────────────────────────────────────────
-
 const WEEK_DAYS = [
-  { label:'M', num:'23', day:0, fullLabel:'Monday, June 23' },
-  { label:'T', num:'24', day:1, fullLabel:'Tuesday, June 24' },
-  { label:'W', num:'25', day:2, fullLabel:'Wednesday, June 25' },
-  { label:'T', num:'26', day:3, fullLabel:'Thursday, June 26' },
-  { label:'F', num:'27', day:4, fullLabel:'Friday, June 27' },
-  { label:'S', num:'28', day:5, fullLabel:'Saturday, June 28' },
-  { label:'S', num:'29', day:6, fullLabel:'Sunday, June 29' },
+  { label:'П', num:'23', day:0, fullLabel:'Понедельник, 23 июня' },
+  { label:'В', num:'24', day:1, fullLabel:'Вторник, 24 июня' },
+  { label:'С', num:'25', day:2, fullLabel:'Среда, 25 июня' },
+  { label:'Ч', num:'26', day:3, fullLabel:'Четверг, 26 июня' },
+  { label:'П', num:'27', day:4, fullLabel:'Пятница, 27 июня' },
+  { label:'С', num:'28', day:5, fullLabel:'Суббота, 28 июня' },
+  { label:'В', num:'29', day:6, fullLabel:'Воскресенье, 29 июня' },
 ];
 
-// ── Profile settings ──────────────────────────────────────────────────────────
-
 const PROFILE_SETTINGS = [
-  { icon:'🔔', label:'Notifications',      iconBg:'#e2f6fd', border:true  },
-  { icon:'🔐', label:'Privacy & Security', iconBg:'#fef0ec', border:true  },
-  { icon:'🎨', label:'Appearance',          iconBg:'#ede9ff', border:true  },
-  { icon:'❓', label:'Help & Support',      iconBg:'#e8f8ee', border:false },
+  { icon:'🔔', label:'Уведомления',           iconBg:'#e2f6fd', border:true  },
+  { icon:'🔐', label:'Конфиденциальность',    iconBg:'#fef0ec', border:true  },
+  { icon:'🎨', label:'Оформление',            iconBg:'#ede9ff', border:true  },
+  { icon:'❓', label:'Помощь и поддержка',    iconBg:'#e8f8ee', border:false },
 ];

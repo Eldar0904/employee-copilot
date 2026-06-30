@@ -1,7 +1,8 @@
 // ── Winning Week screens ──────────────────────────────────────────────────────
 
 function renderOnboarding() {
-  const step = WW_ONBOARDING_STEPS[state.onboardingStep];
+  const steps = WW_ONBOARDING_STEPS();
+  const step = steps[state.onboardingStep];
   const overlay = h('div', { className: 'onboarding-overlay' });
 
   overlay.appendChild(h('div', { className: 'onboarding-card' }, [
@@ -9,7 +10,7 @@ function renderOnboarding() {
     h('div', { className: 'onboarding-title' }, step.title),
     h('div', { className: 'onboarding-body' }, step.body),
     h('div', { className: 'onboarding-dots' },
-      WW_ONBOARDING_STEPS.map((_, i) =>
+      steps.map((_, i) =>
         h('div', { className: `onboarding-dot${i === state.onboardingStep ? ' active' : ''}` })
       )
     ),
@@ -17,7 +18,7 @@ function renderOnboarding() {
       className: 'btn-primary',
       style: 'background:#0b5389;width:100%;',
       onclick: () => {
-        if (state.onboardingStep < WW_ONBOARDING_STEPS.length - 1) {
+        if (state.onboardingStep < steps.length - 1) {
           state.onboardingStep++;
           render();
         } else {
@@ -26,33 +27,31 @@ function renderOnboarding() {
           render();
         }
       },
-    }, state.onboardingStep < WW_ONBOARDING_STEPS.length - 1 ? 'Continue' : 'Start planning'),
-    state.onboardingStep < WW_ONBOARDING_STEPS.length - 1
+    }, state.onboardingStep < steps.length - 1 ? I18N.onboardingContinue : I18N.onboardingStart),
+    state.onboardingStep < steps.length - 1
       ? h('button', {
           className: 'onboarding-skip',
           onclick: () => { wwSetOnboardingDone(); state.showOnboarding = false; render(); },
-        }, 'Skip')
+        }, I18N.onboardingSkip)
       : null,
   ]));
   return overlay;
 }
 
-// ── PLAN (Steps 1–2) ─────────────────────────────────────────────────────────
-
 function renderPlan() {
   const week = state.week;
+  if (!week) return h('div', { className: 'loading-screen' }, I18N.loading);
   const wrap = h('div', { style: 'flex:1;display:flex;flex-direction:column;overflow:hidden;' });
   const scroll = h('div', { className: 'screen-scroll' });
 
-  scroll.appendChild(screenHeader(week.label, 'Plan your week'));
+  scroll.appendChild(screenHeader(week.label, I18N.planTitle));
 
-  // Step 1
   scroll.appendChild(h('div', { className: 'ww-section' }, [
-    stepBadge('Step 1 · Lesson learned'),
+    stepBadge(I18N.step1),
     wwCard([
-      h('div', { className: 'ww-card-title' }, 'What did last week teach you?'),
+      h('div', { className: 'ww-card-title' }, I18N.lessonQuestion),
       h('div', { className: 'ww-chips' },
-        WW_REFLECTION_PROMPTS.map((p, i) =>
+        WW_REFLECTION_PROMPTS().map((p, i) =>
           h('button', {
             className: `ww-chip${state.activePrompt === i ? ' active' : ''}`,
             onclick: () => {
@@ -65,18 +64,17 @@ function renderPlan() {
       ),
       h('textarea', {
         className: 'ww-textarea',
-        placeholder: 'Write your lesson here…',
+        placeholder: I18N.lessonPlaceholder,
         value: week.lesson,
         oninput: e => { week.lesson = e.target.value; saveWeek(week); },
       }),
     ]),
   ]));
 
-  // Step 2
   scroll.appendChild(h('div', { className: 'ww-section' }, [
-    stepBadge('Step 2 · Leveraged priority'),
+    stepBadge(I18N.step2),
     wwCard([
-      h('div', { className: 'ww-card-title' }, 'The one outcome that makes everything else easier'),
+      h('div', { className: 'ww-card-title' }, I18N.priorityQuestion),
       ...week.priorities.map((p, i) => {
         const row = h('div', { className: 'ww-priority-row' });
         const sel = h('button', {
@@ -89,7 +87,7 @@ function renderPlan() {
         }, p.selected ? '★' : String(i + 1));
         const input = h('input', {
           className: `ww-priority-input${p.selected ? ' active' : ''}`,
-          placeholder: `Priority ${i + 1}…`,
+          placeholder: I18N.priorityPlaceholder(i + 1),
           value: p.text,
           oninput: e => { p.text = e.target.value; saveWeek(week); },
           onfocus: () => {
@@ -100,7 +98,7 @@ function renderPlan() {
         row.appendChild(input);
         return row;
       }),
-      h('div', { className: 'ww-hint' }, 'Tap the number to mark as your top priority'),
+      h('div', { className: 'ww-hint' }, I18N.priorityHint),
     ]),
   ]));
 
@@ -108,25 +106,23 @@ function renderPlan() {
   return wrap;
 }
 
-// ── AUDIT (Steps 3–4) ───────────────────────────────────────────────────────
-
 function renderAudit() {
   const week = state.week;
+  if (!week) return h('div', { className: 'loading-screen' }, I18N.loading);
   const wrap = h('div', { style: 'flex:1;display:flex;flex-direction:column;overflow:hidden;' });
   const scroll = h('div', { className: 'screen-scroll' });
 
-  scroll.appendChild(screenHeader(week.label, 'Audit and triage'));
+  scroll.appendChild(screenHeader(week.label, I18N.auditTitle));
 
-  // Step 3: Calendar
   scroll.appendChild(h('div', { className: 'ww-section' }, [
-    stepBadge('Step 3 · Interrogate calendar'),
+    stepBadge(I18N.step3),
     wwCard([
-      h('div', { className: 'ww-card-title' }, "This week's events"),
+      h('div', { className: 'ww-card-title' }, I18N.weekEvents),
       h('div', { className: 'ww-legend' },
         WW_EVENT_TYPES.map(t =>
           h('div', { className: 'ww-legend-item' }, [
             h('div', { className: 'ww-legend-dot', style: `background:${t.color}` }),
-            h('span', null, t.label),
+            h('span', null, t.label()),
           ])
         )
       ),
@@ -134,7 +130,7 @@ function renderAudit() {
         const dayEvents = week.calendarEvents.filter(e => e.day === day);
         if (!dayEvents.length) return null;
         return h('div', { className: 'ww-day-row' }, [
-          h('div', { className: 'ww-day-label' }, day),
+          h('div', { className: 'ww-day-label' }, wwDayLabel(day)),
           h('div', { className: 'ww-day-events' },
             dayEvents.map(event => {
               const type = wwEventType(event.type);
@@ -148,30 +144,29 @@ function renderAudit() {
         ]);
       }),
       week.calendarEvents.length === 0
-        ? h('div', { className: 'ww-empty' }, 'No events added yet. Add your week below.')
+        ? h('div', { className: 'ww-empty' }, I18N.noEvents)
         : null,
       state.addingEvent ? renderAddEventForm(week) : h('button', {
         className: 'ww-add-btn',
         onclick: () => { state.addingEvent = true; render(); },
-      }, '+ Add event'),
-      h('div', { className: 'ww-hint' }, 'Tap an event to flag it for removal'),
+      }, I18N.addEvent),
+      h('div', { className: 'ww-hint' }, I18N.eventFlagHint),
     ]),
   ]));
 
-  // Step 4: Triage
   scroll.appendChild(h('div', { className: 'ww-section' }, [
-    stepBadge('Step 4 · Task triage'),
+    stepBadge(I18N.step4),
     wwCard([
-      h('div', { className: 'ww-card-title' }, 'Decide the fate of every task'),
+      h('div', { className: 'ww-card-title' }, I18N.triageQuestion),
       ...week.tasks.map(task => renderTriageRow(task, week)),
       week.tasks.length === 0
-        ? h('div', { className: 'ww-empty' }, "No tasks yet. Add what's on your plate.")
+        ? h('div', { className: 'ww-empty' }, I18N.noTasks)
         : null,
       state.addingTask ? renderAddTaskForm(week) : h('button', {
         className: 'ww-add-btn',
         onclick: () => { state.addingTask = true; render(); },
-      }, '+ Add task'),
-      h('div', { className: 'ww-hint' }, 'Tap to cycle: Do → Defer → Delegate → Delete'),
+      }, I18N.addTask),
+      h('div', { className: 'ww-hint' }, I18N.triageHint),
     ]),
   ]));
 
@@ -182,7 +177,7 @@ function renderAudit() {
 function renderTriageRow(task, week) {
   const color = wwTriageColor(task.triage);
   const bg = wwTriageBg(task.triage);
-  const label = WW_TRIAGE[task.triage].label;
+  const label = wwTriageLabel(task.triage);
   const row = h('div', { className: 'ww-triage-row' });
   row.appendChild(h('div', { className: 'ww-triage-bar', style: `background:${color}` }));
   row.appendChild(h('div', { className: 'ww-triage-text' }, task.text));
@@ -200,7 +195,7 @@ function renderAddEventForm(week) {
   return h('div', { className: 'ww-add-form' }, [
     h('input', {
       className: 'ww-input',
-      placeholder: 'Event name…',
+      placeholder: I18N.eventNamePlaceholder,
       value: ev.title,
       oninput: e => { ev.title = e.target.value; },
     }),
@@ -209,7 +204,7 @@ function renderAddEventForm(week) {
         h('button', {
           className: `ww-chip${ev.day === d ? ' active' : ''}`,
           onclick: () => { ev.day = d; render(); },
-        }, d)
+        }, wwDayLabel(d))
       )
     ),
     h('div', { className: 'ww-chips' },
@@ -218,11 +213,11 @@ function renderAddEventForm(week) {
           className: `ww-chip${ev.type === t.key ? ' active' : ''}`,
           style: ev.type === t.key ? `background:${t.bg};border-color:${t.color};color:${t.color}` : '',
           onclick: () => { ev.type = t.key; render(); },
-        }, t.label)
+        }, t.label())
       )
     ),
     h('div', { className: 'ww-form-actions' }, [
-      h('button', { className: 'ww-cancel-btn', onclick: () => { state.addingEvent = false; render(); } }, 'Cancel'),
+      h('button', { className: 'ww-cancel-btn', onclick: () => { state.addingEvent = false; render(); } }, I18N.cancel),
       h('button', {
         className: 'ww-confirm-btn',
         onclick: () => {
@@ -239,7 +234,7 @@ function renderAddEventForm(week) {
           saveWeek(week);
           render();
         },
-      }, 'Add event'),
+      }, I18N.confirmAddEvent),
     ]),
   ]);
 }
@@ -248,14 +243,14 @@ function renderAddTaskForm(week) {
   return h('div', { className: 'ww-add-form' }, [
     h('input', {
       className: 'ww-input',
-      placeholder: 'Task description…',
+      placeholder: I18N.taskDescPlaceholder,
       value: state.auditNewTask,
       oninput: e => { state.auditNewTask = e.target.value; },
       onkeydown: e => { if (e.key === 'Enter') submitAuditTask(week); },
     }),
     h('div', { className: 'ww-form-actions' }, [
-      h('button', { className: 'ww-cancel-btn', onclick: () => { state.addingTask = false; render(); } }, 'Cancel'),
-      h('button', { className: 'ww-confirm-btn', onclick: () => submitAuditTask(week) }, 'Add task'),
+      h('button', { className: 'ww-cancel-btn', onclick: () => { state.addingTask = false; render(); } }, I18N.cancel),
+      h('button', { className: 'ww-confirm-btn', onclick: () => submitAuditTask(week) }, I18N.confirmAddTask),
     ]),
   ]);
 }
@@ -269,10 +264,9 @@ function submitAuditTask(week) {
   render();
 }
 
-// ── EXECUTE (Steps 5–6) ───────────────────────────────────────────────────────
-
 function renderExecute() {
   const week = state.week;
+  if (!week) return h('div', { className: 'loading-screen' }, I18N.loading);
   const wrap = h('div', { style: 'flex:1;display:flex;flex-direction:column;overflow:hidden;' });
   const scroll = h('div', { className: 'screen-scroll' });
 
@@ -288,31 +282,29 @@ function renderExecute() {
   const flaggedCount = allEvents.filter(e => e.flagged).length;
 
   const nudgeText = pending === 0 && doTasks.length > 0
-    ? `All ${doTasks.length} tasks done — great week!`
+    ? I18N.allTasksDone(doTasks.length)
     : topPriority?.text
-    ? `${pending} task${pending === 1 ? '' : 's'} left. Stay focused on: "${topPriority.text}"`
-    : `${pending} task${pending === 1 ? '' : 's'} remaining this week.`;
+    ? I18N.tasksLeftFocus(pending, topPriority.text)
+    : I18N.tasksRemaining(pending);
 
-  scroll.appendChild(screenHeader(week.label, 'Good morning, Sara 👋', renderAINudge(nudgeText)));
+  scroll.appendChild(screenHeader(week.label, I18N.greeting, renderAINudge(nudgeText)));
 
-  // Stats
   scroll.appendChild(h('div', { className: 'ww-stats-grid' }, [
-    renderStatCard('Tasks done', `${doneTasks.length}/${doTasks.length}`, '#0b5389'),
-    renderStatCard('Deep work', String(deepWorkCount), '#2E8B57', 'blocks'),
-    renderStatCard('Meetings', String(meetingCount), '#ff9500'),
-    renderStatCard('Removed', String(flaggedCount), '#ef4635', 'events'),
+    renderStatCard(I18N.statTasksDone, `${doneTasks.length}/${doTasks.length}`, '#0b5389'),
+    renderStatCard(I18N.statDeepWork, String(deepWorkCount), '#2E8B57', I18N.blocks),
+    renderStatCard(I18N.statMeetings, String(meetingCount), '#ff9500'),
+    renderStatCard(I18N.statRemoved, String(flaggedCount), '#ef4635', I18N.events),
   ]));
 
-  // Priority + progress
   if (topPriority?.text) {
     scroll.appendChild(h('div', { className: 'ww-section' }, [
       h('div', { className: 'section-row', style: 'padding-top:0' }, [
-        h('div', { className: 'section-title' }, 'Leveraged priority'),
+        h('div', { className: 'section-title' }, I18N.leveragedPriority),
       ]),
       wwCard([
         h('div', { className: 'ww-priority-banner-text' }, topPriority.text),
         h('div', { className: 'week-progress-row' }, [
-          h('div', { className: 'week-progress-label' }, 'Do list progress'),
+          h('div', { className: 'week-progress-label' }, I18N.doListProgress),
           h('div', { className: 'week-progress-count' }, `${pct}%`),
         ]),
         h('div', { className: 'progress-track' }, [
@@ -322,9 +314,8 @@ function renderExecute() {
     ]));
   }
 
-  // Day pills + events
   scroll.appendChild(h('div', { className: 'ww-section' }, [
-    h('div', { className: 'section-title', style: 'margin-bottom:10px' }, "Today's plan"),
+    h('div', { className: 'section-title', style: 'margin-bottom:10px' }, I18N.todaysPlan),
     renderExecDayPills(allEvents),
     renderDayProgress(allEvents, state.activeDay),
     wwCard(
@@ -335,23 +326,22 @@ function renderExecute() {
               h('div', { className: 'ww-slot-bar', style: `background:${type.color}` }),
               h('div', null, [
                 h('div', { className: 'ww-slot-name' }, event.title),
-                h('div', { className: 'ww-slot-type', style: `color:${type.color}` }, event.type),
+                h('div', { className: 'ww-slot-type', style: `color:${type.color}` }, type.label),
               ]),
             ]);
           })
-        : [h('div', { className: 'ww-empty' }, `No events for ${state.activeDay}. Add them in Audit.`)]
+        : [h('div', { className: 'ww-empty' }, I18N.noEventsForDay(wwDayLabel(state.activeDay)))]
     ),
   ]));
 
-  // Do list
   scroll.appendChild(h('div', { className: 'ww-section' }, [
     h('div', { className: 'section-row', style: 'padding-top:0' }, [
-      h('div', { className: 'section-title' }, 'Do list'),
+      h('div', { className: 'section-title' }, I18N.doList),
       h('div', { className: 'count-badge' }, `${doneTasks.length}/${doTasks.length}`),
     ]),
-    doTasks.length === 0
-      ? wwCard([h('div', { className: 'ww-empty' }, 'No tasks marked as Do. Add them in Audit.')])
-      : [...doTasks.filter(t => !t.done), ...doTasks.filter(t => t.done)].map(t => renderDoTaskCard(t, week)),
+    ...(doTasks.length === 0
+      ? [wwCard([h('div', { className: 'ww-empty' }, I18N.noDoTasks)])]
+      : [...doTasks.filter(t => !t.done), ...doTasks.filter(t => t.done)].map(t => renderDoTaskCard(t, week))),
   ]));
 
   wrap.appendChild(scroll);
@@ -364,7 +354,7 @@ function renderAINudge(text) {
       svgEl('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74L12 2z"/></svg>'),
     ]),
     h('div', { style: 'flex:1;min-width:0;' }, [
-      h('div', { className: 'ai-label' }, 'Copilot'),
+      h('div', { className: 'ai-label' }, I18N.copilot),
       h('div', { className: 'ai-text' }, text),
     ]),
   ]);
@@ -393,7 +383,7 @@ function renderExecDayPills(allEvents) {
       className: 'day-pill',
       style: `background:${isActive ? '#0b5389' : isToday ? '#e2f6fd' : '#ffffff'}`,
     }, [
-      h('div', { className: 'day-label', style: `color:${isActive ? 'rgba(255,255,255,0.65)' : '#a6a6a6'}` }, d),
+      h('div', { className: 'day-label', style: `color:${isActive ? 'rgba(255,255,255,0.65)' : '#a6a6a6'}` }, wwDayLabel(d)),
       h('div', { className: 'day-dot', style: `background:${dotColor}` }),
     ]);
     pill.addEventListener('click', () => { state.activeDay = d; render(); });
@@ -408,8 +398,8 @@ function renderDayProgress(allEvents, activeDay) {
   const pct = dayAll.length === 0 ? 0 : Math.round(dayDeep / dayAll.length * 100);
   return h('div', { className: 'week-progress-card', style: 'margin-top:12px' }, [
     h('div', { className: 'week-progress-row' }, [
-      h('div', { className: 'week-progress-label' }, `${activeDay} — ${dayAll.length} event${dayAll.length !== 1 ? 's' : ''}`),
-      h('div', { className: 'week-progress-count' }, `${dayDeep} deep work`),
+      h('div', { className: 'week-progress-label' }, `${wwDayLabel(activeDay)} — ${ruEvents(dayAll.length)}`),
+      h('div', { className: 'week-progress-count' }, `${dayDeep} ${I18N.deepWork}`),
     ]),
     h('div', { className: 'progress-track' }, [
       h('div', { className: 'progress-fill', style: `width:${pct}%;background:linear-gradient(90deg,#2E8B57,#86d7f7)` }),
@@ -442,8 +432,8 @@ function renderDoTaskCard(task, week) {
       h('div', { className: `task-title${done ? ' done' : ''}` }, task.text),
       h('div', { className: 'task-meta' }, [
         h('div', { className: 'ai-priority-tag', style: `background:${triageBg};color:${triageColor}` },
-          WW_TRIAGE[task.triage].label),
-        done ? h('div', { className: 'due-time', style: 'color:#34c759' }, 'Done ✓') : null,
+          wwTriageLabel(task.triage)),
+        done ? h('div', { className: 'due-time', style: 'color:#34c759' }, I18N.doneCheck) : null,
       ]),
     ]),
     svgEl('<svg class="chevron-right" width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#223035" stroke-width="2" stroke-linecap="round"/></svg>'),
@@ -453,35 +443,33 @@ function renderDoTaskCard(task, week) {
   return card;
 }
 
-// ── REVIEW ────────────────────────────────────────────────────────────────────
-
 function renderReview() {
   const week = state.week;
+  if (!week) return h('div', { className: 'loading-screen' }, I18N.loading);
   const wrap = h('div', { style: 'flex:1;display:flex;flex-direction:column;overflow:hidden;' });
   const scroll = h('div', { className: 'screen-scroll' });
   const doTasks = wwDoTasks();
   const doneTasks = wwDoneDoTasks();
   const topPriority = wwTopPriority();
 
-  scroll.appendChild(screenHeader(week.label, 'Weekly review'));
+  scroll.appendChild(screenHeader(week.label, I18N.reviewTitle));
 
   scroll.appendChild(h('div', { className: 'ww-section' }, [
-    h('div', { className: 'section-title', style: 'margin-bottom:10px' }, 'Week at a glance'),
+    h('div', { className: 'section-title', style: 'margin-bottom:10px' }, I18N.weekAtGlance),
     h('div', { className: 'ww-summary-grid' }, [
-      renderStatCard('Tasks done', `${doneTasks.length}/${doTasks.length}`, '#0b5389'),
-      renderStatCard('Weeks tracked', String(state.weekHistory.length + 1), '#34c759'),
+      renderStatCard(I18N.statTasksDone, `${doneTasks.length}/${doTasks.length}`, '#0b5389'),
+      renderStatCard(I18N.weeksTracked, String(state.weekHistory.length + 1), '#34c759'),
     ]),
     topPriority?.text ? h('div', { className: 'ww-priority-banner' }, [
-      h('div', { className: 'ww-priority-banner-label' }, "This week's priority"),
+      h('div', { className: 'ww-priority-banner-label' }, I18N.thisWeekPriority),
       h('div', { className: 'ww-priority-banner-text' }, topPriority.text),
     ]) : null,
   ]));
 
-  // Rating
   scroll.appendChild(h('div', { className: 'ww-section' }, [
-    h('div', { className: 'section-title', style: 'margin-bottom:10px' }, 'How was your week?'),
+    h('div', { className: 'section-title', style: 'margin-bottom:10px' }, I18N.howWasWeek),
     wwCard([
-      h('div', { className: 'ww-card-title' }, 'Overall rating'),
+      h('div', { className: 'ww-card-title' }, I18N.overallRating),
       h('div', { className: 'ww-stars' },
         [1, 2, 3, 4, 5].map(n =>
           h('button', {
@@ -493,21 +481,19 @@ function renderReview() {
     ]),
   ]));
 
-  // Sliders
   scroll.appendChild(h('div', { className: 'ww-section' }, [
-    h('div', { className: 'section-title', style: 'margin-bottom:10px' }, 'Self-assessment'),
+    h('div', { className: 'section-title', style: 'margin-bottom:10px' }, I18N.selfAssessment),
     wwCard([
-      renderSliderRow('Priority complete', week.review.priorityDone, 0, 100, '%', v => { week.review.priorityDone = v; saveWeek(week); render(); }),
-      renderSliderRow('Energy level', week.review.energyLevel, 1, 10, '', v => { week.review.energyLevel = v; saveWeek(week); render(); }),
-      renderSliderRow('Focus quality', week.review.focusQuality, 1, 10, '', v => { week.review.focusQuality = v; saveWeek(week); render(); }),
+      renderSliderRow(I18N.priorityComplete, week.review.priorityDone, 0, 100, '%', v => { week.review.priorityDone = v; saveWeek(week); render(); }),
+      renderSliderRow(I18N.energyLevel, week.review.energyLevel, 1, 10, '', v => { week.review.energyLevel = v; saveWeek(week); render(); }),
+      renderSliderRow(I18N.focusQuality, week.review.focusQuality, 1, 10, '', v => { week.review.focusQuality = v; saveWeek(week); render(); }),
     ]),
   ]));
 
-  // Reflection
   scroll.appendChild(h('div', { className: 'ww-section' }, [
-    h('div', { className: 'section-title', style: 'margin-bottom:10px' }, 'Reflection'),
+    h('div', { className: 'section-title', style: 'margin-bottom:10px' }, I18N.reflection),
     h('div', { className: 'ww-chips', style: 'margin-bottom:10px' },
-      WW_REVIEW_PROMPTS.map(p =>
+      WW_REVIEW_PROMPTS().map(p =>
         h('button', {
           className: 'ww-chip',
           onclick: () => {
@@ -518,20 +504,19 @@ function renderReview() {
     ),
     h('textarea', {
       className: 'ww-textarea',
-      placeholder: 'What will you carry into next week?',
+      placeholder: I18N.reflectionPlaceholder,
       value: week.review.reflection,
       oninput: e => { week.review.reflection = e.target.value; saveWeek(week); },
     }),
   ]));
 
-  // History
   if (state.weekHistory.length > 0) {
     scroll.appendChild(h('div', { className: 'ww-section' }, [
       h('button', {
         className: 'ww-history-toggle',
         onclick: () => { state.showHistory = !state.showHistory; render(); },
       }, [
-        h('div', { className: 'section-title', style: 'margin:0' }, `Past weeks (${state.weekHistory.length})`),
+        h('div', { className: 'section-title', style: 'margin:0' }, I18N.pastWeeks(state.weekHistory.length)),
         h('span', { className: 'ww-history-arrow' }, state.showHistory ? '▲' : '▼'),
       ]),
       state.showHistory ? wwCard(
@@ -572,8 +557,6 @@ function renderSliderRow(label, value, min, max, unit, onChange) {
   ]);
 }
 
-// ── WW Task detail sheet ──────────────────────────────────────────────────────
-
 function renderWwTaskSheet() {
   const task = state.activeTask;
   const week = state.week;
@@ -587,7 +570,7 @@ function renderWwTaskSheet() {
   overlay.addEventListener('click', () => { state.activeTask = null; render(); });
 
   const btnEl = h('button', { className: 'btn-primary', style: `background:${done ? '#34c759' : '#0b5389'}` });
-  btnEl.textContent = done ? 'Mark as Pending' : 'Mark as Done';
+  btnEl.textContent = done ? I18N.markPending : I18N.markDone;
   btnEl.addEventListener('click', () => {
     live.done = !live.done;
     saveWeek(week);
@@ -605,8 +588,8 @@ function renderWwTaskSheet() {
     h('div', { className: 'sheet-task-title' }, live.text),
     h('div', { className: 'sheet-tags' }, [
       h('div', { className: 'sheet-tag-priority', style: `background:${triageBg};color:${triageColor}` },
-        WW_TRIAGE[live.triage].label),
-      h('div', { className: 'sheet-tag-neutral' }, done ? 'Completed' : 'Pending'),
+        wwTriageLabel(live.triage)),
+      h('div', { className: 'sheet-tag-neutral' }, done ? I18N.completed : I18N.pending),
     ]),
     h('div', { className: 'sheet-actions' }, [btnEl, closeBtn]),
   ]);

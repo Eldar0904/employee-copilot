@@ -2,10 +2,24 @@
 
 function render() {
   const content = document.getElementById('appContent');
+  if (!content) return;
   content.innerHTML = '';
 
+  try {
+    renderApp(content);
+  } catch (err) {
+    console.error(err);
+    content.appendChild(h('div', { className: 'loading-screen', style: 'padding:24px;text-align:center;line-height:1.5' }, [
+      I18N.errorTitle,
+      h('br'),
+      h('span', { style: 'font-size:12px;color:#a6a6a6' }, err.message),
+    ]));
+  }
+}
+
+function renderApp(content) {
   if (state.loading) {
-    content.appendChild(h('div', { className: 'loading-screen' }, 'Loading…'));
+    content.appendChild(h('div', { className: 'loading-screen' }, I18N.loading));
     return;
   }
 
@@ -37,17 +51,17 @@ function render() {
 function renderMessages() {
   const wrap = h('div', { style: 'flex:1;display:flex;flex-direction:column;overflow:hidden;' });
   wrap.appendChild(h('div', { className: 'msgs-header' }, [
-    h('div', { className: 'screen-title' }, 'Messages'),
+    h('div', { className: 'screen-title' }, I18N.messages),
     h('div', { className: 'search-bar' }, [
       svgEl('<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#a6a6a6" stroke-width="1.6"/><path d="M9.5 9.5L12.5 12.5" stroke="#a6a6a6" stroke-width="1.6" stroke-linecap="round"/></svg>'),
-      h('div', { className: 'search-placeholder' }, 'Search messages'),
+      h('div', { className: 'search-placeholder' }, I18N.searchMessages),
     ]),
   ]));
 
   const scroll = h('div', { className: 'msgs-scroll' });
 
   const chSection = h('div', { className: 'msgs-section' }, [
-    h('div', { className: 'msgs-section-label' }, 'Departments'),
+    h('div', { className: 'msgs-section-label' }, I18N.departments),
   ]);
   CHANNELS.forEach(ch => {
     const row = h('div', { className: 'msg-row' }, [
@@ -68,7 +82,7 @@ function renderMessages() {
     row.addEventListener('click', () => {
       state.activeChat = {
         id: ch.id, name: ch.name,
-        sub: `${ch.unread > 0 ? ch.unread + ' unread · ' : ''}Dept. channel`,
+        sub: `${ch.unread > 0 ? ch.unread + ' ' + I18N.unread + ' · ' : ''}${I18N.deptChannel}`,
         color: ch.bgColor, icon: ch.emoji, iconSize: '18px', radius: '14px', isChannel: true,
       };
       render();
@@ -79,7 +93,7 @@ function renderMessages() {
   scroll.appendChild(chSection);
 
   const dmSection = h('div', { className: 'msgs-section' }, [
-    h('div', { className: 'msgs-section-label' }, 'Direct Messages'),
+    h('div', { className: 'msgs-section-label' }, I18N.directMessages),
   ]);
   DMS.forEach(dm => {
     const avatarWrap = h('div', { className: 'dm-avatar', style: `background:${dm.avatarBg}` }, [
@@ -105,7 +119,7 @@ function renderMessages() {
     row.addEventListener('click', () => {
       state.activeChat = {
         id: dm.id, name: dm.name,
-        sub: dm.role + (dm.online ? ' · Online' : ''),
+        sub: dm.role + (dm.online ? ' · ' + I18N.online : ''),
         color: dm.avatarBg, icon: dm.initials, iconSize: '14px', radius: '50%', isChannel: false,
       };
       render();
@@ -163,7 +177,7 @@ function renderChat() {
   wrap.appendChild(msgs);
 
   wrap.appendChild(h('div', { className: 'chat-input-bar' }, [
-    h('div', { className: 'chat-input-field' }, 'Type a message…'),
+    h('div', { className: 'chat-input-field' }, I18N.typeMessage),
     h('div', { className: 'chat-send' }, [
       svgEl('<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8H14M14 8L9 3M14 8L9 13" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>'),
     ]),
@@ -188,26 +202,26 @@ function renderMe() {
 
   wrap.appendChild(h('div', { className: 'me-hero' }, [
     h('div', { className: 'me-avatar' }, [h('div', { className: 'me-initials' }, 'SA')]),
-    h('div', { className: 'me-name' }, 'Sara Ahmed'),
-    h('div', { className: 'me-role' }, 'Product Manager · PMO'),
+    h('div', { className: 'me-name' }, I18N.meName),
+    h('div', { className: 'me-role' }, I18N.meRole),
     h('div', { className: 'me-status' }, [
       h('div', { className: 'status-dot' }),
-      h('div', { className: 'status-text' }, 'Available'),
+      h('div', { className: 'status-text' }, I18N.available),
     ]),
   ]));
 
   wrap.appendChild(h('div', { className: 'me-stats' }, [
     h('div', { className: 'stat-card' }, [
       h('div', { className: 'stat-num', style: 'color:#0b5389' }, String(doneTasks.length)),
-      h('div', { className: 'stat-label' }, 'Done this week'),
+      h('div', { className: 'stat-label' }, I18N.doneThisWeek),
     ]),
     h('div', { className: 'stat-card' }, [
       h('div', { className: 'stat-num', style: 'color:#c97559' }, String(doTasks.length - doneTasks.length)),
-      h('div', { className: 'stat-label' }, 'Pending'),
+      h('div', { className: 'stat-label' }, I18N.pendingLabel),
     ]),
     h('div', { className: 'stat-card' }, [
       h('div', { className: 'stat-num', style: 'color:#34c759' }, String(state.weekHistory.length + 1)),
-      h('div', { className: 'stat-label' }, 'Weeks tracked'),
+      h('div', { className: 'stat-label' }, I18N.weeksTracked),
     ]),
   ]));
 
@@ -232,12 +246,12 @@ function renderTabBar() {
   const A = '#0b5389', I = '#a6a6a6';
   const at = state.activeTab;
   const tabs = [
-    { key: 'plan',    label: 'Plan',    active: at === 'plan' },
-    { key: 'audit',   label: 'Audit',   active: at === 'audit' },
-    { key: 'execute', label: 'Do',      active: at === 'execute' },
-    { key: 'review',  label: 'Review',  active: at === 'review' },
-    { key: 'messages', label: 'Inbox',  active: at === 'messages', unread: hasUnreadMessages() },
-    { key: 'me',      label: 'Me',      active: at === 'me' },
+    { key: 'plan',    label: I18N.tabPlan,    active: at === 'plan' },
+    { key: 'audit',   label: I18N.tabAudit,   active: at === 'audit' },
+    { key: 'execute', label: I18N.tabDo,      active: at === 'execute' },
+    { key: 'review',  label: I18N.tabReview,  active: at === 'review' },
+    { key: 'messages', label: I18N.tabInbox,  active: at === 'messages', unread: hasUnreadMessages() },
+    { key: 'me',      label: I18N.tabMe,      active: at === 'me' },
   ];
 
   const bar = h('div', { className: 'tab-bar tab-bar-6' });
@@ -271,12 +285,22 @@ function renderTabBar() {
 // ── Boot ──────────────────────────────────────────────────────────────────────
 
 function boot() {
-  state.week = wwGetCurrentWeek();
-  state.weekHistory = wwGetWeekHistory();
-  state.activeDay = wwGetTodayDayKey();
-  state.showOnboarding = !wwIsOnboardingDone();
-  state.loading = false;
-  render();
+  try {
+    state.week = wwGetCurrentWeek();
+    state.weekHistory = wwGetWeekHistory();
+    state.activeDay = wwGetTodayDayKey();
+    state.showOnboarding = !wwIsOnboardingDone();
+    state.loading = false;
+    render();
+  } catch (err) {
+    console.error(err);
+    state.loading = false;
+    render();
+  }
 }
 
-boot();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
+}
